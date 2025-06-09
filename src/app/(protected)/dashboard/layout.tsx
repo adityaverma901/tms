@@ -26,7 +26,7 @@ export default function RootLayout({
           <CombinedLayout />
             {children}
             <Toaster/>
-          <Navbar />
+          {/* <Navbar /> */}
         
       </body>
     </html>

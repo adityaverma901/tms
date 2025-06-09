@@ -9,7 +9,7 @@ import { Poppins } from "next/font/google";
 export const metadata: Metadata = {
 
 
-  title: "Real Estate",
+  title: "Ticket",
   description: "We're here to Increase your Productivity",
   generator: "next.js",
   manifest: "/manifest.json",
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#fff" }],
   authors: [
     {
-      name: "Ashutosh Mishra",
-      url: "https://github.com/ashutoshmishra",
+      name: "Aditya Verma",
+      url: "https://github.com/adityaverma901",
     }
   ],
   viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",

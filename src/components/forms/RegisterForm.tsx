@@ -18,7 +18,7 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { RegisterUserSchema, Role } from "@/schemas";
 import Link from "next/link";
-import { Building2 } from "lucide-react";
+import { Building2, Ticket } from "lucide-react";
 
 const FormSchema = RegisterUserSchema;
 type FormSchemaType = z.infer<typeof FormSchema>;
@@ -87,9 +87,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ text, role }) => {
         <div className="flex justify-center mb-6">
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-md bg-blue-800 flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-white" />
+              <Ticket className="h-5 w-5 text-white" />
             </div>
-            <span className="ml-2 text-2xl font-bold text-blue-800">RealShare</span>
+            <span className="ml-2 text-2xl font-bold text-blue-800">Tms</span>
           </div>
         </div>
         </Link>

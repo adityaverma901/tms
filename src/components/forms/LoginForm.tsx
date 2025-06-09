@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Building2 } from "lucide-react";
+import { Building2, TicketIcon } from "lucide-react";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 
@@ -69,9 +69,9 @@ function LoginForm({ api }: any) {
         <div className="flex justify-center mb-6">
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-md bg-blue-800 flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-white" />
+              <TicketIcon className="h-5 w-5 text-white" />
             </div>
-            <span className="ml-2 text-2xl font-bold text-blue-800">RealShare</span>
+            <span className="ml-2 text-2xl font-bold text-blue-800">Tms</span>
           </div>
         </div>
         </Link>
