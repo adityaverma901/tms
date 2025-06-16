@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, TicketIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -118,9 +118,10 @@ export default function NavBarWithoutDasboard() {
           <div className="flex items-center space-x-2 sm:hidden">
             <Link href="/dashboard">
               <div className="flex space-x-1">
-                <Image src="/logo.jpg" height={40} width={40} alt="Logo" />
-                <h1 className="text-primary text-2xl font-normal">
-                  Travelisting
+                {/* <Image src="/logo.jpg" height={40} width={40} alt="Logo" /> */}
+                <TicketIcon height={40} width={40} className="text-blue-600" />
+                <h1 className="text-black text-2xl font-normal">
+                  TMS
                 </h1>
               </div>
             </Link>
@@ -131,10 +132,10 @@ export default function NavBarWithoutDasboard() {
             {!isAuthenticated ? (
               <div className=" hidden">
                 <Link href="/auth/login">
-                  <button className="hover:text-primary">Sign In</button>
+                  <button className="hover:text-black">Sign In</button>
                 </Link>
                 <Link href="/auth/register">
-                  <button className="px-4 py-2 rounded-full border border-primary text-primary hover:bg-primary-foreground">
+                  <button className="px-4 py-2 rounded-full border border-black text-black hover:bg-black-foreground">
                     Join now
                   </button>
                 </Link>
@@ -143,11 +144,11 @@ export default function NavBarWithoutDasboard() {
               <div className="relative hidden">
                 <button
                   onClick={() => setDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-primary-foreground"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-black-foreground"
                 >
-                  <span className="text-primary">{session?.user?.name}</span>
+                  <span className="text-black">{session?.user?.name}</span>
                   <svg
-                    className={`w-4 h-4 text-primary transition-transform ${
+                    className={`w-4 h-4 text-black transition-transform ${
                       isDropdownOpen ? "rotate-180" : ""
                     }`}
                     fill="none"
@@ -171,13 +172,13 @@ export default function NavBarWithoutDasboard() {
                         setDropdownOpen(!isDropdownOpen);
                       }}
                     >
-                      <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-primary-light">
+                      <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-black-light">
                         Profile
                       </button>
                     </Link>
                     <form action={handleLogout}>
                       <button
-                        className="block w-full text-left px-4 py-2  text-gray-700 hover:bg-primary-light"
+                        className="block w-full text-left px-4 py-2  text-gray-700 hover:bg-black-light"
                         disabled={isLoading}
                       >
                         Sign Out {isLoading ? "..." : ""}
@@ -193,7 +194,7 @@ export default function NavBarWithoutDasboard() {
           <div className="sm:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-primary focus:outline-none"
+              className="text-black focus:outline-none"
               aria-label="Toggle mobile menu"
             >
               <svg
@@ -233,9 +234,9 @@ export default function NavBarWithoutDasboard() {
                 {/* Menu header with close button */}
                 <div className="flex items-center justify-between p-4 border-b">
                   <div className=" flex space-x-1 items-center">
-                    <Image src="/logo.jpg" height={40} width={40} alt="Logo" />
-                    <span className="font-medium text-lg text-primary">
-                      Travelisting
+                    {/* <Image src="/logo.jpg" height={40} width={40} alt="Logo" /> */}
+                    <span className="font-medium text-lg text-black">
+                      TMS
                     </span>
                   </div>
                   <button
@@ -302,7 +303,7 @@ export default function NavBarWithoutDasboard() {
                   ) : (
                     <div className="space-y-2">
                       <div className="py-3 border-b border-gray-100">
-                        <p className="text-primary font-medium">
+                        <p className="text-black font-medium">
                           {session?.user?.name}
                         </p>
                         <p className="text-gray-500 text-sm">

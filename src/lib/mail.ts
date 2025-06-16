@@ -85,21 +85,21 @@ export async function sendEmailVerificationEmail(email: string, token: string) {
           <body>
             <div class="container">
               <div class="header">
-                <div class="logo">Travelisting</div>
+                <div class="logo">Tms</div>
               </div>
               <div class="content">
                 <h2>Account Activation</h2>
                 <p>Hello,</p>
-                <p>Thank you for registering with Travelisting.</p>
+                <p>Thank you for registering with Ticket Management System.</p>
                 <p>Click the button below to activate your account:</p>
                 <div style="text-align: center;">
                   <a href="${url}" class="button">Activate Account</a>
                 </div>
                 <p>If you didn't request this email, please ignore it.</p>
-                <p>Best regards,<br>The Travelisting Team</p>
+                <p>Best regards,<br>The Gennext It Team</p>
               </div>
               <div class="footer">
-                <p>&copy; 2025 Travelisting. All rights reserved.</p>
+                <p>&copy; 2025 TMS. All rights reserved.</p>
               </div>
             </div>
           </body>
