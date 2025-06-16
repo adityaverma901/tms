@@ -842,7 +842,7 @@ export default function TicketSystemHomepage() {
         </div>
 
         {/* Mobile Menu */}
-        {isOpen && (
+        {/* {isOpen && (
           <div className="md:hidden bg-white pb-3 px-4">
             <div className="flex flex-col space-y-2 pt-2">
               <a 
@@ -875,23 +875,67 @@ export default function TicketSystemHomepage() {
               </a>
 
               <div className="pt-2 border-t border-gray-200">
+                <Link href={'/auth/login'}>
                 <Button
                   variant="outline"
                   className="w-full border-purple-700 text-purple-700 hover:bg-purple-700 hover:text-white mb-2"
-                  onClick={() => setIsOpen(false)}
+                  // onClick={() => setIsOp en(false)}
                 >
                   Sign In
                 </Button>
+</Link>
+<Link href={'/auth/login'}>
                 <Button 
                   className="w-full bg-purple-700 hover:bg-purple-800 text-white"
-                  onClick={() => setIsOpen(false)}
+                  // onClick={() => setIsOpen(false)}
                 >
                   Start Free Trial
                 </Button>
+</Link>
               </div>
             </div>
           </div>
-        )}
+        )} */}
+        {isOpen && (
+  <div className="md:hidden bg-white pb-3 px-4 z-50 absolute top-16 left-0 w-full shadow-lg">
+    <div className="flex flex-col space-y-2 pt-2">
+      {/* Links */}
+      {['features', 'pricing', 'demo', 'contact'].map(section => (
+        <a
+          key={section}
+          href={`#${section}`}
+          className="text-gray-600 hover:text-purple-700 px-3 py-2 rounded-md text-base font-medium"
+          onClick={() => setIsOpen(false)}
+        >
+          {section.charAt(0).toUpperCase() + section.slice(1)}
+        </a>
+      ))}
+
+      {/* Auth Buttons */}
+      <div className="pt-2 border-t border-gray-200">
+        <Link href="/auth/login">
+          <Button
+            variant="outline"
+            className="w-full border-purple-700 text-purple-700 hover:bg-purple-700 hover:text-white mb-2"
+            onClick={() => setIsOpen(false)}
+          >
+            Sign In
+          </Button>
+        </Link>
+
+        <Link href="/auth/login">
+          <Button
+            className="w-full bg-purple-700 hover:bg-purple-800 text-white"
+            onClick={() => setIsOpen(false)}
+          >
+            Start Free Trial
+          </Button>
+        </Link>
+      </div>
+    </div>
+  </div>
+)}
+
       </nav>
 
       {/* Hero Section */}
