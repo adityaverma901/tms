@@ -65,6 +65,8 @@ const AdminTicketDashboard = () => {
     } finally {
       setLoading(false);
     }
+    console.log("1 fetching user");
+    
   };
 
   const openModal = (ticket: any) => {
@@ -99,6 +101,7 @@ const AdminTicketDashboard = () => {
     } finally {
       setLoading(false);
     }
+     console.log("2 fetching userr tickets");
   };
 
   const updateTicketStatus = async (ticketId: string, newStatus: Ticket['status']) => {
@@ -126,6 +129,8 @@ const AdminTicketDashboard = () => {
       setError('Failed to update ticket status');
       console.error('Error updating ticket:', err);
     }
+    console.log("3 updating");
+    
   };
 
   useEffect(() => {
