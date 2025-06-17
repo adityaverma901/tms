@@ -23,8 +23,8 @@ export const metadata: Metadata = {
   ],
   viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
   icons: [
-    { rel: "apple-touch-icon", url: "/logo-512.png" },
-    { rel: "icon", url: "/logo-512.png" },
+    { rel: "apple-touch-icon", url: "/icons-512.png" },
+    { rel: "icon", url: "/icons-512.png" },
   ]
  
 };
@@ -41,11 +41,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <SessionProvider session={session}>
       <html lang="en" className={poppins.variable}>
         <head>
-<meta name="theme-color" content="#ffffff"/>
-<link rel="manifest" href="/manifest.json"/>
-<link rel="icon" href="/image-removebg-preview-512.png" />
-<link rel="apple-touch-icon" href="/image-removebg-preview-512.png" />
-</head>
+          <meta name="theme-color" content="#ffffff"/>
+          <link rel="manifest" href="/manifest.json"/>
+          <link rel="icon" href="/icons-512.png" />
+          <link rel="apple-touch-icon" href="/icons-512.png" />
+        </head>
         <body>
           {children}
         </body>
