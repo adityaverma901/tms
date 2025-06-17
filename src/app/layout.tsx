@@ -41,11 +41,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <SessionProvider session={session}>
       <html lang="en" className={poppins.variable}>
         <head>
-          <meta name="theme-color" content="#ffffff"/>
-          <link rel="manifest" href="/manifest.json"/>
-          <link rel="icon" href="/logo-512.png" />
-          <link rel="apple-touch-icon" href="/logo-512.png" />
-        </head>
+<meta name="theme-color" content="#ffffff"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="icon" href="/image-removebg-preview-512.png" />
+<link rel="apple-touch-icon" href="/image-removebg-preview-512.png" />
+</head>
         <body>
           {children}
         </body>
