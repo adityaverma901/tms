@@ -138,7 +138,7 @@ const config: Config = withUt({
         },
         // Update primary to use gold color
         primary: {
-          DEFAULT: '#D58829', // Direct value instead of hsl var for easier migration
+          DEFAULT: '#1e3a8a', // Direct value instead of hsl var for easier migration
           foreground: '#FFFFFF', // White text on gold background
           light: '#FFE0B2',
           dark: '#95591A',

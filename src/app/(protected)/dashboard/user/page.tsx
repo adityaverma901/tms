@@ -218,8 +218,9 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="sm:flex hidden  justify-between items-center h-16">
             <div className="flex items-center">
-              <Ticket className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mr-2 sm:mr-3" />
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-900 ">Support Desk</h1>
+              <img src="/icons.png" className='w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mr-2 sm:mr-3' alt="" />
+              {/* <Ticket className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mr-2 sm:mr-3" /> */}
+              <h1 className="text-lg sm:text-xl font-bold text-primary ">TMS</h1>
             </div>
             
             {/* Desktop Navigation */}
@@ -366,7 +367,7 @@ const Dashboard = () => {
             My Tickets ({tickets.length})
           </button>
         </div> */}
-        <button
+        {/* <button
             onClick={() => setActiveSection('create')}
             className={`px-3 sm:px-4 fixed bottom-8 right-8  py-2 rounded-full text-sm font-medium transition-colors ${
               activeSection === 'create'
@@ -375,7 +376,17 @@ const Dashboard = () => {
             }`}
           >
              +
-          </button>
+          </button> */}
+          <button
+  onClick={() => setActiveSection('create')}
+  className={`fixed bottom-8 right-8 w-14 h-14 sm:w-16 sm:h-16 rounded-full font-medium transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center ${
+    activeSection === 'create'
+      ? 'hidden'
+      : 'bg-blue-900 text-white hover:bg-blue-950 hover:scale-110 active:scale-95'
+  }`}
+>
+  <Plus size={24} className="sm:w-7 sm:h-7" />
+</button>
 
         {/* Create Ticket View */}
         {activeSection === 'create' && (

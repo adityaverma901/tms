@@ -118,9 +118,9 @@ export default function NavBarWithoutDasboard() {
           <div className="flex items-center space-x-2 sm:hidden">
             <Link href="/dashboard">
               <div className="flex space-x-1">
-                {/* <Image src="/logo.jpg" height={40} width={40} alt="Logo" /> */}
-                <TicketIcon height={40} width={40} className="text-blue-600" />
-                <h1 className="text-black text-2xl font-normal">
+                <Image src="/icons.png" height={40} width={40} alt="Logo" />
+                {/* <TicketIcon height={40} width={40} className="text-blue-600" /> */}
+                <h1 className="text-blue-900 text-3xl font-bold">
                   TMS
                 </h1>
               </div>
@@ -172,9 +172,9 @@ export default function NavBarWithoutDasboard() {
                         setDropdownOpen(!isDropdownOpen);
                       }}
                     >
-                      <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-black-light">
+                      {/* <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-black-light">
                         Profile
-                      </button>
+                      </button> */}
                     </Link>
                     <form action={handleLogout}>
                       <button
@@ -316,7 +316,7 @@ export default function NavBarWithoutDasboard() {
                           setMobileMenuOpen(!mobileMenuOpen);
                         }}
                       >
-                        <button className="w-full text-left py-3 border-b border-gray-100 flex items-center">
+                        {/* <button className="w-full text-left py-3 border-b border-gray-100 flex items-center">
                           <svg
                             className="w-5 h-5 mr-3"
                             fill="none"
@@ -331,7 +331,7 @@ export default function NavBarWithoutDasboard() {
                             />
                           </svg>
                           Profile
-                        </button>
+                        </button> */}
                       </Link>
                       <form action={handleLogout}>
                         <button

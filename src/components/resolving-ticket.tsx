@@ -1,12 +1,15 @@
 // 'use client';
 
 // import { useCurrentUser } from '@/hooks/auth';
+// import { UploadButton } from '@/utils/uploadthing';
+// import { Paperclip, X } from 'lucide-react';
 // import Image from 'next/image';
 // import React, { useState, useEffect, useRef } from 'react';
 
 // interface Ticket {
+//   ticketNumber: string
 //   id: string;
-//   title: string;
+//   subject: string;
 //   description: string;
 //   status: string;
 //   priority: string;
@@ -20,7 +23,7 @@
 //   senderId: string;
 //   direction: 'user_to_admin' | 'admin_to_user';
 //   message: string;
-//   attachments?: any;
+//   attachments?: string[];
 //   isRead: boolean;
 //   createdAt: string;
 //   sender?: {
@@ -46,7 +49,20 @@
 //   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 //   const [messages, setMessages] = useState<Message[]>([]);
 //   const [loadingMessages, setLoadingMessages] = useState(true);
+//   // const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
+//   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 //   const messagesEndRef = useRef<HTMLDivElement>(null);
+//   const [newTicket, setNewTicket] = useState({
+//       title: '',
+//       description: '',
+//       priority: 'MEDIUM',
+//       category: 'TECHNICAL',
+//       attachments: [] as string[]
+//     });
+//   // Admin attachment functionality
+//   const [adminAttachments, setAdminAttachments] = useState<string[]>([]);
+//   const [isUploading, setIsUploading] = useState(false);
+//   const fileInputRef = useRef<HTMLInputElement>(null);
   
 //   const user = useCurrentUser();
 
@@ -54,7 +70,10 @@
 //   const scrollToBottom = () => {
 //     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 //   };
-
+//  const handleUploadError = (error: Error) => {
+//     console.error("Upload error:", error);
+//     setError(`Upload failed: ${error.message}`);
+//   };
 //   useEffect(() => {
 //     scrollToBottom();
 //   }, [messages]);
@@ -79,6 +98,79 @@
 //     } finally {
 //       setLoadingMessages(false);
 //     }
+//   };
+// const removeUploadedFile = (fileUrl: string) => {
+//     const updatedFiles = uploadedFiles.filter(url => url !== fileUrl);
+//     setUploadedFiles(updatedFiles);
+//     setNewTicket({
+//       ...newTicket,
+//       attachments: updatedFiles
+//     });
+//   };
+//   // const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+//   //   const files = event.target.files;
+//   //   if (!files || files.length === 0) return;
+
+//   //   setIsUploading(true);
+//   //   setError('');
+
+//   //   try {
+//   //     const uploadPromises = Array.from(files).map(async (file) => {
+//   //       // Validate file size (5MB limit)
+//   //       if (file.size > 5 * 1024 * 1024) {
+//   //         throw new Error(`File ${file.name} is too large. Maximum size is 5MB.`);
+//   //       }
+
+//   //       // Validate file type
+//   //       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+//   //       if (!allowedTypes.includes(file.type)) {
+//   //         throw new Error(`File type ${file.type} is not supported.`);
+//   //       }
+
+//   //       const formData = new FormData();
+//   //       formData.append('file', file);
+//   //       formData.append('type', 'admin_attachment');
+
+//   //       const response = await fetch('/api/upload', {
+//   //         method: 'POST',
+//   //         body: formData,
+//   //       });
+
+//   //       if (!response.ok) {
+//   //         throw new Error(`Failed to upload ${file.name}`);
+//   //       }
+
+//   //       const data = await response.json();
+//   //       if (!data.success) {
+//   //         throw new Error(data.error || `Failed to upload ${file.name}`);
+//   //       }
+
+//   //       return data.fileUrl;
+//   //     });
+
+//   //     const uploadedUrls = await Promise.all(uploadPromises);
+//   //     setAdminAttachments(prev => [...prev, ...uploadedUrls]);
+//   //   } catch (error) {
+//   //     console.error('Error uploading files:', error);
+//   //     setError(error instanceof Error ? error.message : 'Failed to upload files');
+//   //   } finally {
+//   //     setIsUploading(false);
+//   //     if (fileInputRef.current) {
+//   //       fileInputRef.current.value = '';
+//   //     }
+//   //   }
+//   // };
+// const handleUploadComplete = (res: any) => {
+//     console.log("Files uploaded: ", res);
+//     const fileUrls = res.map((file: any) => file.url);
+//     setUploadedFiles([...uploadedFiles, ...fileUrls]);
+//     setNewTicket({
+//       ...newTicket,
+//       attachments: [...newTicket.attachments, ...fileUrls]
+//     });
+//   };
+//   const removeAdminAttachment = (fileUrl: string) => {
+//     setAdminAttachments(prev => prev.filter(url => url !== fileUrl));
 //   };
 
 //   const getStatusColor = (status: string) => {
@@ -123,6 +215,8 @@
 //         return 'bg-blue-100 text-blue-800 border-blue-300';
 //       case 'enhancement':
 //         return 'bg-indigo-100 text-indigo-800 border-indigo-300';
+//       case 'technical':
+//         return 'bg-gray-100 text-gray-800 border-gray-300';
 //       default:
 //         return 'bg-gray-100 text-gray-800 border-gray-300';
 //     }
@@ -156,9 +250,18 @@
 //     }
 //   };
 
+//   const getFileName = (url: string) => {
+//     return url.split('/').pop() || 'attachment';
+//   };
+
+//   const isImageFile = (url: string) => {
+//     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+//     return imageExtensions.some(ext => url.toLowerCase().endsWith(ext));
+//   };
+
 //   const handleSendMessage = async () => {
-//     if (!resolutionMessage.trim()) {
-//       setError('Please enter a message');
+//     if (!resolutionMessage.trim() && adminAttachments.length === 0) {
+//       setError('Please enter a message or attach a file');
 //       return;
 //     }
 
@@ -176,6 +279,7 @@
 //           senderId: user?.id,
 //           direction: 'admin_to_user',
 //           message: resolutionMessage,
+//           attachments: adminAttachments.length > 0 ? adminAttachments : undefined,
 //           isRead: false,
 //           updateTicket: {
 //             status: status,
@@ -198,6 +302,7 @@
 //           senderId: user?.id || '',
 //           direction: 'admin_to_user',
 //           message: resolutionMessage,
+//           attachments: adminAttachments.length > 0 ? adminAttachments : undefined,
 //           isRead: false,
 //           createdAt: new Date().toISOString(),
 //           sender: {
@@ -209,6 +314,7 @@
         
 //         setMessages(prev => [...prev, newMessage]);
 //         setResolutionMessage('');
+//         setAdminAttachments([]);
         
 //         if (onResolve) onResolve();
 //       } else {
@@ -224,92 +330,263 @@
 
 //   return (
 //     <div
-//       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"
+//       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-2 sm:p-4"
 //       onClick={onClose}
 //     >
 //       <div
-//         className="bg-white rounded-lg shadow-lg max-w-4xl w-full relative max-h-[90vh] flex flex-col"
+//         className="bg-white rounded-lg shadow-lg w-full h-full sm:max-w-xl sm:h-auto sm:max-h-[90vh] relative flex flex-col"
 //         onClick={(e) => e.stopPropagation()}
 //       >
 //         {/* Header - Fixed */}
-//         <div className="p-6 border-b border-gray-200 flex-shrink-0">
+//         <div className="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
 //           <button
 //             onClick={onClose}
-//             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl z-10"
+//             className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-500 hover:text-gray-700 text-xl z-10"
 //           >
 //             ×
 //           </button>
-//           <h2 className="text-xl font-semibold text-gray-900 pr-8">
-//             {ticket.title}
+         
+
+         
+//           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 pr-8">
+//                       Ticket #{ticket.ticketNumber}-  {ticket.subject}
 //           </h2>
-//           <p className="text-sm text-gray-600 mt-1">
-//             Ticket #{ticket.id}
-//           </p>
+          
+          
+//           {/* Tab Navigation for All Screens */}
+//           {/* <div className="mt-4">
+//             <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+//               <button
+//                 onClick={() => setActiveTab('details')}
+//                 className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+//                   activeTab === 'details'
+//                     ? 'bg-white text-blue-600 shadow-sm'
+//                     : 'text-gray-500 hover:text-gray-700'
+//                 }`}
+//               >
+//                 Details
+//               </button>
+//               <button
+//                 onClick={() => setActiveTab('chat')}
+//                 className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+//                   activeTab === 'chat'
+//                     ? 'bg-white text-blue-600 shadow-sm'
+//                     : 'text-gray-500 hover:text-gray-700'
+//                 }`}
+//               >
+//                 Chat
+//               </button>
+//             </div>
+//           </div> */}
 //         </div>
 
-//         <div className="flex flex-1 overflow-hidden">
-//           {/* Left Panel - Ticket Details */}
-//           <div className="w-1/3 border-r border-gray-200 flex flex-col">
-//             <div className="flex-1 overflow-y-auto p-6 space-y-4">
+//         {/* Main Content Area - Tab Based for All Screens */}
+//         <div className="flex-1 flex flex-col overflow-hidden">
+//           {/* Details Tab */}
+//           {/* {activeTab === 'details' && ( */}
+//             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+//               {/* Title */}
+              
+
 //               {/* Description */}
 //               <div>
 //                 <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-//                 <div className="text-gray-700 text-sm max-h-32 overflow-y-auto bg-gray-50 p-3 rounded border">
+//                 <div className="text-gray-700 text-sm bg-gray-50 p-3 rounded border max-h-32 sm:max-h-40 overflow-y-auto">
 //                   {ticket.description}
 //                 </div>
 //               </div>
 
-//               {/* Status and Priority */}
-//               <div className="grid grid-cols-1 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+//               {/* Status, Priority, Category in one line */}
+//               <div className="grid grid-cols-3 gap-2 sm:gap-4">
+//                 {/* <div>
+//                   <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
 //                   <select
 //                     value={status}
 //                     onChange={(e) => setStatus(e.target.value)}
-//                     className={`px-3 py-1 text-sm rounded border ${getStatusColor(status)} w-full`}
+//                     className={`px-2 py-1 text-xs rounded border ${getStatusColor(status)} w-full`}
 //                     disabled={isSubmitting}
 //                   >
 //                     <option value="open">Open</option>
 //                     <option value="pending">Pending</option>
 //                     <option value="resolved">Resolved</option>
 //                   </select>
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+//                 </div> */}
+//                 {/* <div>
+//                   <label className="block text-xs font-medium text-gray-700 mb-1">Priority</label>
 //                   <select
 //                     value={priority}
 //                     onChange={(e) => setPriority(e.target.value)}
-//                     className={`px-3 py-1 text-sm rounded border ${getPriorityColor(priority)} w-full`}
+//                     className={`px-2 py-1 text-xs rounded border ${getPriorityColor(priority)} w-full`}
 //                     disabled={isSubmitting}
 //                   >
 //                     <option value="low">Low</option>
 //                     <option value="medium">Medium</option>
 //                     <option value="high">High</option>
 //                   </select>
+//                 </div> */}
+                
+//               </div>
+
+//               {/* Admin Message Box */}
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-2">Admin Message</label>
+//                 <div className="space-y-3">
+//                   <textarea
+//                     value={resolutionMessage}
+//                     onChange={(e) => setResolutionMessage(e.target.value)}
+//                     placeholder="Type your message to the user..."
+//                     className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+//                     disabled={isSubmitting}
+//                     rows={3}
+//                     onKeyDown={(e) => {
+//                       if (e.key === 'Enter' && !e.shiftKey) {
+//                         e.preventDefault();
+//                         handleSendMessage();
+//                       }
+//                     }}
+//                   />
+                  
+//                   {/* File Upload Section */}
+//                   {/* <div className="space-y-2">
+//                     <div className="flex items-center gap-2">
+//                       <input
+//                         ref={fileInputRef}
+//                         type="file"
+//                         multiple
+//                         accept="image/*,.pdf,.doc,.docx,.txt"
+//                         onChange={handleFileUpload}
+//                         className="hidden"
+//                         disabled={isUploading || isSubmitting}
+//                       />
+//                       <button
+//                         type="button"
+//                         onClick={() => fileInputRef.current?.click()}
+//                         disabled={isUploading || isSubmitting}
+//                         className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                       >
+//                         {isUploading ? 'Uploading...' : '📎 Attach Files'}
+//                       </button>
+//                       <span className="text-xs text-gray-500">
+//                         Max 5MB per file (Images, PDF, DOC, TXT)
+//                       </span>
+//                     </div>
+
+                    
+//                     {adminAttachments.length > 0 && (
+//                       <div className="space-y-2">
+//                         <label className="text-xs font-medium text-gray-700">Attachments to send:</label>
+//                         <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto border border-gray-200 rounded p-2">
+//                           {adminAttachments.map((fileUrl, index) => (
+//                             <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded border">
+//                               <div className="flex items-center space-x-2 flex-1 min-w-0">
+//                                 {isImageFile(fileUrl) ? (
+//                                   <Image 
+//                                     src={fileUrl} 
+//                                     height={30} 
+//                                     width={30} 
+//                                     alt={`Preview ${index + 1}`}
+//                                     className="w-8 h-8 rounded object-cover flex-shrink-0 cursor-pointer"
+//                                     onClick={() => setSelectedImage(fileUrl)}
+//                                   />
+//                                 ) : (
+//                                   <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
+//                                     <span className="text-blue-600 text-xs">📄</span>
+//                                   </div>
+//                                 )}
+//                                 <span className="text-xs text-gray-600 truncate">
+//                                   {getFileName(fileUrl)}
+//                                 </span>
+//                               </div>
+//                               <button
+//                                 onClick={() => removeAdminAttachment(fileUrl)}
+//                                 className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0 text-sm"
+//                                 disabled={isSubmitting}
+//                               >
+//                                 ×
+//                               </button>
+//                             </div>
+//                           ))}
+//                         </div>
+//                       </div>
+//                     )}
+//                   </div> */}
+//                   <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-2">
+//                     <Paperclip className="w-4 h-4 inline mr-1" />
+//                     Attachments (Optional)
+//                   </label>
+//                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+//                     <UploadButton
+//                       endpoint="imageUploader"
+//                       onClientUploadComplete={handleUploadComplete}
+//                       onUploadError={handleUploadError}
+//                     />
+//                     {/* <p className="text-xs text-gray-500 mt-2 text-center">
+//                       Upload screenshots, documents, or other files to help describe your issue
+//                     </p> */}
+//                   </div>
+
+//                   {/* Display uploaded files */}
+//                   {uploadedFiles.length > 0 && (
+//                     <div className="mt-4">
+//                       <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Files:</h4>
+//                       <div className="space-y-2">
+//                         {uploadedFiles.map((fileUrl, index) => (
+//                           <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+//                             <div className="flex items-center min-w-0">
+//                               <Paperclip className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
+//                               <a 
+//                                 href={fileUrl} 
+//                                 target="_blank" 
+//                                 rel="noopener noreferrer"
+//                                 className="text-sm text-blue-600 hover:underline truncate"
+//                               >
+//                                 <img src={fileUrl} alt="" className="max-w-full h-auto max-h-20 object-contain" />
+//                               </a>
+//                             </div>
+//                             <button
+//                               type="button"
+//                               onClick={() => removeUploadedFile(fileUrl)}
+//                               className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0"
+//                             >
+//                               <X className="w-4 h-4" />
+//                             </button>
+//                           </div>
+//                         ))}
+//                       </div>
+//                     </div>
+//                   )}
+//                 </div>
+
+
+//                   <button
+//                     onClick={handleSendMessage}
+//                     disabled={(!resolutionMessage.trim() && adminAttachments.length === 0) || isSubmitting}
+//                     className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+//                   >
+//                     {isSubmitting ? 'Sending...' : 'Send Message'}
+//                   </button>
+//                   {error && (
+//                     <div className="text-sm text-red-500">
+//                       {error}
+//                     </div>
+//                   )}
 //                 </div>
 //               </div>
 
-//               {/* Category */}
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-//                 <span className={`inline-block px-3 py-1 text-sm rounded border capitalize ${getCategoryColor(ticket.category)}`}>
-//                   {ticket.category}
-//                 </span>
-//               </div>
-
-//               {/* Attachments */}
+//               {/* User Attachments */}
 //               {ticket.attachment && ticket.attachment.length > 0 && (
 //                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
-//                   <div className="space-y-2 max-h-60 overflow-y-auto border border-gray-200 rounded p-2">
+//                   <label className="block text-sm font-medium text-gray-700 mb-2">User Attachments</label>
+//                   <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 max-h-60 overflow-y-auto border border-gray-200 rounded p-2">
 //                     {ticket.attachment.map((item, index) => (
-//                       <div key={index} className="flex-shrink-0">
+//                       <div key={index} className="aspect-square sm:aspect-auto flex-shrink-0">
 //                         <Image 
 //                           src={item} 
-//                           height={150} 
-//                           width={150} 
+//                           height={200} 
+//                           width={200} 
 //                           alt={`Attachment ${index + 1}`}
-//                           className="rounded border border-gray-300 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+//                           className="w-full h-full sm:w-auto sm:h-auto rounded border border-gray-300 object-cover cursor-pointer hover:opacity-80 transition-opacity"
 //                           onClick={() => setSelectedImage(item)}
 //                         />
 //                       </div>
@@ -318,93 +595,10 @@
 //                 </div>
 //               )}
 //             </div>
-//           </div>
+        
 
-//           {/* Right Panel - Chat */}
-//           <div className="flex-1 flex flex-col">
-//             {/* Messages Area */}
-//             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-//               {loadingMessages ? (
-//                 <div className="flex justify-center items-center h-32">
-//                   <div className="text-gray-500">Loading messages...</div>
-//                 </div>
-//               ) : messages.length === 0 ? (
-//                 <div className="flex justify-center items-center h-32">
-//                   <div className="text-gray-500">No messages yet. Start the conversation!</div>
-//                 </div>
-//               ) : (
-//                 <>
-//                   {messages.map((message, index) => {
-//                     const isAdmin = message.direction === 'admin_to_user';
-//                     const showDate = index === 0 || 
-//                       formatDate(messages[index - 1].createdAt) !== formatDate(message.createdAt);
-
-//                     return (
-//                       <div key={message.id}>
-//                         {showDate && (
-//                           <div className="flex justify-center my-4">
-//                             <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
-//                               {formatDate(message.createdAt)}
-//                             </span>
-//                           </div>
-//                         )}
-                        
-//                         <div className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-//                           <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-//                             isAdmin 
-//                               ? 'bg-blue-500 text-white' 
-//                               : 'bg-white text-gray-800 border border-gray-200'
-//                           }`}>
-//                             <div className="text-sm break-words">
-//                               {message.message}
-//                             </div>
-//                             <div className={`text-xs mt-1 ${
-//                               isAdmin ? 'text-blue-100' : 'text-gray-500'
-//                             }`}>
-//                               {formatTime(message.createdAt)}
-//                             </div>
-//                           </div>
-//                         </div>
-//                       </div>
-//                     );
-//                   })}
-//                   <div ref={messagesEndRef} />
-//                 </>
-//               )}
-//             </div>
-
-//             {/* Message Input */}
-//             <div className="p-4 border-t border-gray-200 bg-white">
-//               <div className="flex space-x-2">
-//                 <textarea
-//                   value={resolutionMessage}
-//                   onChange={(e) => setResolutionMessage(e.target.value)}
-//                   placeholder="Type your message..."
-//                   className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                   disabled={isSubmitting}
-//                   rows={2}
-//                   onKeyDown={(e) => {
-//                     if (e.key === 'Enter' && !e.shiftKey) {
-//                       e.preventDefault();
-//                       handleSendMessage();
-//                     }
-//                   }}
-//                 />
-//                 <button
-//                   onClick={handleSendMessage}
-//                   disabled={!resolutionMessage.trim() || isSubmitting}
-//                   className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 self-end"
-//                 >
-//                   {isSubmitting ? 'Sending...' : 'Send'}
-//                 </button>
-//               </div>
-//               {error && (
-//                 <div className="mt-2 text-sm text-red-500">
-//                   {error}
-//                 </div>
-//               )}
-//             </div>
-//           </div>
+//           {/* Chat Tab */}
+        
 //         </div>
 //       </div>
 
@@ -440,12 +634,15 @@
 'use client';
 
 import { useCurrentUser } from '@/hooks/auth';
+import { UploadButton } from '@/utils/uploadthing';
+import { Paperclip, X } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState, useEffect, useRef } from 'react';
 
 interface Ticket {
+  ticketNumber: string
   id: string;
-  title: string;
+  subject: string;
   description: string;
   status: string;
   priority: string;
@@ -459,7 +656,7 @@ interface Message {
   senderId: string;
   direction: 'user_to_admin' | 'admin_to_user';
   message: string;
-  attachments?: any;
+  attachments?: string[];
   isRead: boolean;
   createdAt: string;
   sender?: {
@@ -485,16 +682,30 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(true);
-  const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+  const [newTicket, setNewTicket] = useState({
+      title: '',
+      description: '',
+      priority: 'MEDIUM',
+      category: 'TECHNICAL',
+      attachments: [] as string[]
+    });
+  const [adminAttachments, setAdminAttachments] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const user = useCurrentUser();
 
   // Scroll to bottom when messages update
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
+ const handleUploadError = (error: Error) => {
+    console.error("Upload error:", error);
+    setError(`Upload failed: ${error.message}`);
+  };
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -519,6 +730,44 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
     } finally {
       setLoadingMessages(false);
     }
+  };
+
+const removeUploadedFile = (fileUrl: string) => {
+    const updatedFiles = uploadedFiles.filter(url => url !== fileUrl);
+    setUploadedFiles(updatedFiles);
+    setNewTicket({
+      ...newTicket,
+      attachments: updatedFiles
+    });
+  };
+
+  // Handle file input change for the small button
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    // Convert files to URLs and add to uploadedFiles
+    Array.from(files).forEach(file => {
+      const url = URL.createObjectURL(file);
+      setUploadedFiles(prev => [...prev, url]);
+      setNewTicket(prev => ({
+        ...prev,
+        attachments: [...prev.attachments, url]
+      }));
+    });
+  };
+
+const handleUploadComplete = (res: any) => {
+    console.log("Files uploaded: ", res);
+    const fileUrls = res.map((file: any) => file.url);
+    setUploadedFiles([...uploadedFiles, ...fileUrls]);
+    setNewTicket({
+      ...newTicket,
+      attachments: [...newTicket.attachments, ...fileUrls]
+    });
+  };
+  const removeAdminAttachment = (fileUrl: string) => {
+    setAdminAttachments(prev => prev.filter(url => url !== fileUrl));
   };
 
   const getStatusColor = (status: string) => {
@@ -563,6 +812,8 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
         return 'bg-blue-100 text-blue-800 border-blue-300';
       case 'enhancement':
         return 'bg-indigo-100 text-indigo-800 border-indigo-300';
+      case 'technical':
+        return 'bg-gray-100 text-gray-800 border-gray-300';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-300';
     }
@@ -596,9 +847,18 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
     }
   };
 
+  const getFileName = (url: string) => {
+    return url.split('/').pop() || 'attachment';
+  };
+
+  const isImageFile = (url: string) => {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    return imageExtensions.some(ext => url.toLowerCase().endsWith(ext));
+  };
+
   const handleSendMessage = async () => {
-    if (!resolutionMessage.trim()) {
-      setError('Please enter a message');
+    if (!resolutionMessage.trim() && adminAttachments.length === 0) {
+      setError('Please enter a message or attach a file');
       return;
     }
 
@@ -616,6 +876,7 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
           senderId: user?.id,
           direction: 'admin_to_user',
           message: resolutionMessage,
+          attachments: adminAttachments.length > 0 ? adminAttachments : undefined,
           isRead: false,
           updateTicket: {
             status: status,
@@ -638,17 +899,18 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
           senderId: user?.id || '',
           direction: 'admin_to_user',
           message: resolutionMessage,
+          attachments: adminAttachments.length > 0 ? adminAttachments : undefined,
           isRead: false,
           createdAt: new Date().toISOString(),
           sender: {
             id: user?.id || '',
             name: user?.name || 'Admin',
-            // profilePic: user?.profilePic
           }
         };
         
         setMessages(prev => [...prev, newMessage]);
         setResolutionMessage('');
+        setAdminAttachments([]);
         
         if (onResolve) onResolve();
       } else {
@@ -668,7 +930,7 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg w-full h-full sm:max-w-4xl sm:h-auto sm:max-h-[90vh] relative flex flex-col"
+        className="bg-white rounded-lg shadow-lg w-full h-full sm:max-w-xl sm:h-auto sm:max-h-[90vh] relative flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Fixed */}
@@ -679,268 +941,39 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
           >
             ×
           </button>
+         
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 pr-8">
-            {ticket.title}
+                      Ticket #{ticket.ticketNumber}-  {ticket.subject}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Ticket #{ticket.id}
-          </p>
-          
-          {/* Mobile Tab Navigation */}
-          <div className="mt-4 sm:hidden">
-            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-               <button
-                onClick={() => setActiveTab('details')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-                  activeTab === 'details'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Details
-              </button>
-    <button
-                onClick={() => setActiveTab('chat')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-                  activeTab === 'chat'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Chat
-              </button>
-             
-            </div>
-          </div>
         </div>
 
-        {/* Desktop Layout */}
-        <div className="hidden sm:flex flex-1 overflow-hidden">
-          {/* Left Panel - Ticket Details */}
-          <div className="w-1/3 border-r border-gray-200 flex flex-col">
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Description */}
               <div>
                 <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-                <div className="text-gray-700 text-sm max-h-32 overflow-y-auto bg-gray-50 p-3 rounded border">
+                <div className="text-gray-700 text-sm bg-gray-50 p-3 rounded border max-h-32 sm:max-h-40 overflow-y-auto">
                   {ticket.description}
                 </div>
               </div>
 
-              {/* Status and Priority */}
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className={`px-3 py-1 text-sm rounded border ${getStatusColor(status)} w-full`}
-                    disabled={isSubmitting}
-                  >
-                    <option value="open">Open</option>
-                    <option value="pending">Pending</option>
-                    <option value="resolved">Resolved</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className={`px-3 py-1 text-sm rounded border ${getPriorityColor(priority)} w-full`}
-                    disabled={isSubmitting}
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
+              {/* Status, Priority, Category in one line */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                
               </div>
 
-              {/* Category */}
+              {/* Admin Message Box */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <span className={`inline-block px-3 py-1 text-sm rounded border capitalize ${getCategoryColor(ticket.category)}`}>
-                  {ticket.category}
-                </span>
-              </div>
-
-              {/* Attachments */}
-              {ticket.attachment && ticket.attachment.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
-                  <div className="space-y-2 max-h-60 overflow-y-auto border border-gray-200 rounded p-2">
-                    {ticket.attachment.map((item, index) => (
-                      <div key={index} className="flex-shrink-0">
-                        <Image 
-                          src={item} 
-                          height={150} 
-                          width={150} 
-                          alt={`Attachment ${index + 1}`}
-                          className="rounded border border-gray-300 object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => setSelectedImage(item)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Right Panel - Chat */}
-          <div className="flex-1 flex flex-col">
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-              {loadingMessages ? (
-                <div className="flex justify-center items-center h-32">
-                  <div className="text-gray-500">Loading messages...</div>
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="flex justify-center items-center h-32">
-                  <div className="text-gray-500">No messages yet. Start the conversation!</div>
-                </div>
-              ) : (
-                <>
-                  {messages.map((message, index) => {
-                    const isAdmin = message.direction === 'admin_to_user';
-                    const showDate = index === 0 || 
-                      formatDate(messages[index - 1].createdAt) !== formatDate(message.createdAt);
-
-                    return (
-                      <div key={message.id}>
-                        {showDate && (
-                          <div className="flex justify-center my-4">
-                            <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
-                              {formatDate(message.createdAt)}
-                            </span>
-                          </div>
-                        )}
-                        
-                        <div className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                            isAdmin 
-                              ? 'bg-blue-500 text-white' 
-                              : 'bg-white text-gray-800 border border-gray-200'
-                          }`}>
-                            <div className="text-sm break-words">
-                              {message.message}
-                            </div>
-                            <div className={`text-xs mt-1 ${
-                              isAdmin ? 'text-blue-100' : 'text-gray-500'
-                            }`}>
-                              {formatTime(message.createdAt)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={messagesEndRef} />
-                </>
-              )}
-            </div>
-
-            {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 bg-white">
-              <div className="flex space-x-2">
-                <textarea
-                  value={resolutionMessage}
-                  onChange={(e) => setResolutionMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  disabled={isSubmitting}
-                  rows={2}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                />
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!resolutionMessage.trim() || isSubmitting}
-                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 self-end"
-                >
-                  {isSubmitting ? 'Sending...' : 'Send'}
-                </button>
-              </div>
-              {error && (
-                <div className="mt-2 text-sm text-red-500">
-                  {error}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Layout */}
-        <div className="sm:hidden flex-1 flex flex-col overflow-hidden">
-          {/* Chat Tab */}
-          {activeTab === 'chat' && (
-            <>
-              {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {loadingMessages ? (
-                  <div className="flex justify-center items-center h-32">
-                    <div className="text-gray-500">Loading messages...</div>
-                  </div>
-                ) : messages.length === 0 ? (
-                  <div className="flex justify-center items-center h-32">
-                    <div className="text-gray-500 text-center px-4">No messages yet. Start the conversation!</div>
-                  </div>
-                ) : (
-                  <>
-                    {messages.map((message, index) => {
-                      const isAdmin = message.direction === 'admin_to_user';
-                      const showDate = index === 0 || 
-                        formatDate(messages[index - 1].createdAt) !== formatDate(message.createdAt);
-
-                      return (
-                        <div key={message.id}>
-                          {showDate && (
-                            <div className="flex justify-center my-4">
-                              <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
-                                {formatDate(message.createdAt)}
-                              </span>
-                            </div>
-                          )}
-                          
-                          <div className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[85%] px-3 py-2 rounded-lg ${
-                              isAdmin 
-                                ? 'bg-blue-500 text-white' 
-                                : 'bg-white text-gray-800 border border-gray-200'
-                            }`}>
-                              <div className="text-sm break-words">
-                                {message.message}
-                              </div>
-                              <div className={`text-xs mt-1 ${
-                                isAdmin ? 'text-blue-100' : 'text-gray-500'
-                              }`}>
-                                {formatTime(message.createdAt)}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <div ref={messagesEndRef} />
-                  </>
-                )}
-              </div>
-
-              {/* Message Input */}
-              <div className="p-4 border-t border-gray-200 bg-white">
-                <div className="flex space-x-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Solution:-</label>
+                <div className="space-y-3">
                   <textarea
                     value={resolutionMessage}
                     onChange={(e) => setResolutionMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    placeholder="Type your message to the user..."
+                    className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     disabled={isSubmitting}
-                    rows={2}
+                    rows={3}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -948,85 +981,99 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
                       }
                     }}
                   />
+                  
+                  <div className="">
+                    <div className='flex justify-between'>
+                    <label className="flex text-sm justify-between font-medium text-gray-700 mb-2">
+                     
+                      Attachments (Optional)
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept="image/*,.pdf,.doc,.docx"
+                        onChange={handleFileInputChange}
+                        className="hidden"
+                      />
+                      
+                    </label>
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className=" flex justify-between"
+                      >
+                        <Paperclip className="w-4 h-4" />
+                      </button>
+                      </div>
+                    {/* <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                      <UploadButton
+                        endpoint="imageUploader"
+                        onClientUploadComplete={handleUploadComplete}
+                        onUploadError={handleUploadError}
+                      />
+                    </div> */}
+
+                    {/* Display uploaded files */}
+                    {uploadedFiles.length > 0 && (
+                      <div className="mt-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Uploaded Files:</h4>
+                        <div className="space-y-2">
+                          {uploadedFiles.map((fileUrl, index) => (
+                            <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                              <div className="flex items-center min-w-0">
+                                <Paperclip className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
+                                <a 
+                                  href={fileUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-blue-600 hover:underline truncate"
+                                >
+                                  <img src={fileUrl} alt="" className="max-w-full h-auto max-h-20 object-contain" />
+                                </a>
+                              </div>
+                              <button
+                                ref={buttonRef}
+                                type="button"
+                                onClick={() => removeUploadedFile(fileUrl)}
+                                className="inline-flex items-center justify-center h-8 w-8 p-1.5 rounded bg-red-100 hover:bg-red-200 text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ml-2 flex-shrink-0"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <button
                     onClick={handleSendMessage}
-                    disabled={!resolutionMessage.trim() || isSubmitting}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 self-end text-sm"
+                    disabled={(!resolutionMessage.trim() && adminAttachments.length === 0) || isSubmitting}
+                    className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   >
-                    {isSubmitting ? 'Sending...' : 'Send'}
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </button>
-                </div>
-                {error && (
-                  <div className="mt-2 text-sm text-red-500">
-                    {error}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* Details Tab */}
-          {activeTab === 'details' && (
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
-              {/* Description */}
-              <div>
-                <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-                <div className="text-gray-700 text-sm bg-gray-50 p-3 rounded border">
-                  {ticket.description}
+                  {error && (
+                    <div className="text-sm text-red-500">
+                      {error}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Status and Priority */}
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className={`px-3 py-2 text-sm rounded border ${getStatusColor(status)} w-full`}
-                    disabled={isSubmitting}
-                  >
-                    <option value="open">Open</option>
-                    <option value="pending">Pending</option>
-                    <option value="resolved">Resolved</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className={`px-3 py-2 text-sm rounded border ${getPriorityColor(priority)} w-full`}
-                    disabled={isSubmitting}
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                <span className={`inline-block px-3 py-1 text-sm rounded border capitalize ${getCategoryColor(ticket.category)}`}>
-                  {ticket.category}
-                </span>
-              </div>
-
-              {/* Attachments */}
+              {/* User Attachments */}
               {ticket.attachment && ticket.attachment.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">User Attachments</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 max-h-60 overflow-y-auto border border-gray-200 rounded p-2">
                     {ticket.attachment.map((item, index) => (
-                      <div key={index} className="aspect-square">
+                      <div key={index} className="aspect-square sm:aspect-auto flex-shrink-0">
                         <Image 
                           src={item} 
                           height={200} 
                           width={200} 
                           alt={`Attachment ${index + 1}`}
-                          className="w-full h-full rounded border border-gray-300 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                          className="w-full h-full sm:w-auto sm:h-auto rounded border border-gray-300 object-cover cursor-pointer hover:opacity-80 transition-opacity"
                           onClick={() => setSelectedImage(item)}
                         />
                       </div>
@@ -1035,7 +1082,6 @@ const ResolvingTicket: React.FC<Props> = ({ ticket, onClose, onResolve, userId }
                 </div>
               )}
             </div>
-          )}
         </div>
       </div>
 

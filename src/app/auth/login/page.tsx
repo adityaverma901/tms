@@ -1,5 +1,5 @@
 import LoginForm from "@/components/forms/LoginForm";
-import Procu from "@/components/shared/Procu";
+
 
 function LoginPage() {
   return (
